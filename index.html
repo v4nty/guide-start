@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гайд: Как начать правильно в V4nty Arcade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(31, 40, 51, 0.6);
+            --text-main: #c5c6c7;
+            --text-light: #ffffff;
+            --accent-cyan: #66fcf1;
+            --accent-blue: #45a29e;
+            --accent-purple: #9d4edd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(102, 252, 241, 0.05), transparent 60%),
+                        radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.05), transparent 50%);
+            z-index: -1;
+            animation: pulseBg 15s infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* Прогресс-бар чтения */
+        #progress-bar {
+            position: fixed;
+            top: 0; left: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan));
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.2s ease-out;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Заголовок */
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 1s forwards cubic-bezier(0.1, 0, 0.1, 1);
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(102, 252, 241, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-main);
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid var(--accent-cyan);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Карточки шагов */
+        .step-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(102, 252, 241, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 252, 241, 0.15);
+            border-color: rgba(102, 252, 241, 0.4);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '⚡';
+            font-size: 1.2rem;
+        }
+
+        /* Списки и текст внутри карточек */
+        ul {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        li {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        li::before {
+            content: '▹';
+            position: absolute;
+            left: 0;
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        /* Стилизация команд бота */
+        .cmd {
+            font-family: 'Fira Code', monospace;
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--accent-cyan);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            border: 1px solid rgba(102, 252, 241, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .cmd:hover {
+            background: rgba(102, 252, 241, 0.1);
+            box-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+        }
+
+        /* Блок итога */
+        .conclusion {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.1), rgba(102, 252, 241, 0.1));
+            border: 1px solid var(--accent-purple);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .conclusion h2 {
+            justify-content: center;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .conclusion h2::before { content: '🏆'; }
+
+        /* Анимации при скролле (JS добавляет класс .visible) */
+        .step-card.visible, .conclusion.visible {
+            animation: fadeUp 0.8s forwards cubic-bezier(0.1, 0, 0.1, 1);
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптив для телефонов */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .step-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <div class="container">
+        <header>
+            <h1>V4nty Arcade</h1>
+            <div class="subtitle">
+                Добро пожаловать в экосистему V4nty Arcade. Здесь правят холодный расчет, удача и грамотное управление балансом. На старте ты получаешь 1000 Coins — это твой начальный капитал. Большинство новичков теряют его в первые минуты, поддавшись азарту.<br><br>
+                <strong>Эта статья — твой план от статуса «Новичок 🌱» до «Легенда 👑». Читай внимательно, если хочешь занять место в <span class="cmd">/top</span> богачей.</strong>
+            </div>
+        </header>
+
+        <main>
+            <div class="step-card fade-el">
+                <h2>Шаг 1. Сбор бесплатной ликвидности</h2>
+                <p>Прежде чем открывать игры и рисковать стартовой тысячей, собери все доступные бонусы. Твоя задача — максимально раздуть баланс без малейшего риска.</p>
+                <ul>
+                    <li><strong>Ежедневный куш:</strong> Жми 🎁 Бонус (или пиши <span class="cmd">/bonus</span>). Это принесет от 200 до 500 Coins. Обновляется раз в 24 часа.</li>
+                    <li><strong>Легкие деньги:</strong> Запускай команду <span class="cmd">/work</span>. Ты взломаешь базу данных или напишешь код, получив за это от 100 до 500 Coins и ценный опыт (XP). Доступно каждые 2 часа.</li>
+                    <li><strong>Промокоды:</strong> Внимательно следи за новостями в канале проекта. Промокоды имеют лимит активаций — самые быстрые забирают лучшую награду через <span class="cmd">/redeem [код]</span>.</li>
+                </ul>
+            </div>
+
+            <div class="step-card fade-el">
+                <h2>Шаг 2. Обязательный ежедневный квест</h2>
+                <p>Не лети в хай-ролл (ставки на весь баланс). Твой лучший друг в первый день — кнопка 📜 Квесты (или <span class="cmd">/quests</span>).</p>
+                <ul>
+                    <li>Задание для новичка всегда одно: сыграть 3 раза в «Мины».</li>
+                    <li><strong>Как сделать грамотно:</strong> Запускай игру с минимальной ставкой. Например: <span class="cmd">/mines 50 3</span> (ставка 50, 3 бомбы).</li>
+                    <li>Сделай так 3 раза, аккуратно забирая выигрыш на низких иксах, либо умышленно сливая копейки.</li>
+                    <li><strong>Итог:</strong> За выполнение квеста система мгновенно начислит тебе 1000 Coins.</li>
+                </ul>
+            </div>
+
+            <div class="step-card fade-el">
+                <h2>Шаг 3. Инвестиции в пассивный доход</h2>
+                <p>Азартные игры — это адреналин, но настоящие магнаты строят капитал на пассиве. Для этого существует 💻 Ферма (<span class="cmd">/farm</span>). Ферма генерирует коины, даже когда ты спишь.</p>
+                <ul>
+                    <li>Уровень 1 обойдется тебе в 1000 Coins и будет приносить 150 Coins в час.</li>
+                    <li>Не жалей стартовых денег на прокачку майнера. Чем раньше ты купишь первый уровень, тем быстрее начнешь получать чистую прибыль. Заходи собирать урожай, когда удобно.</li>
+                </ul>
+            </div>
+
+            <div class="step-card fade-el">
+                <h2>Шаг 4. Умный гемблинг (Игры)</h2>
+                <p>Когда базовый капитал собран, а ферма работает, можно приступать к умножению баланса.</p>
+                <ul>
+                    <li><strong>💣 Мины (<span class="cmd">/mines</span>):</strong> Классика. Поле 5х5. Чем больше мин ты ставишь, тем агрессивнее растет множитель. Оптимальная стратегия для старта: 3-5 мин. Не жадничай — забирай прибыль на x1.5 – x2.0.</li>
+                    <li><strong>🏰 Башня (<span class="cmd">/tower</span>):</strong> 10 этажей, на каждом по 3 двери, за одной из которых ловушка. Чем выше заберешься, тем безумнее множитель (вплоть до x38.00). Игра для тех, кто умеет вовремя останавливаться.</li>
+                    <li><strong>🚀 Ракета (<span class="cmd">/crash</span>):</strong> Самый непредсказуемый режим. Множитель растет на глазах, но ракета может взорваться даже на x1.01. Прыгай, пока не поздно!</li>
+                </ul>
+            </div>
+
+            <div class="step-card fade-el">
+                <h2>Шаг 5. Кейсы и статус</h2>
+                <p>Оружейный кейс (<span class="cmd">/cases</span>) стоит 1500 Coins.</p>
+                <p style="margin-top: 10px; color: var(--accent-purple); font-weight: 600;">Совет 10/10: Не покупай кейс в первые часы игры. Оставь эту роскошь на момент, когда твой баланс перевалит за 5-10 тысяч.</p>
+                <p style="margin-top: 10px;">Кейсы — это рулетка для элиты. В них можно выбить как обычный <em>G22 | Flock</em> (Rare), так и легендарный <em>AKR | Treasure Hunter</em> (Legendary) или даже тайный <em>Керамбит | Gold</em> (Arcana с шансом 0.1%). Все твои трофеи хранятся в инвентаре (<span class="cmd">/inv</span>) и показывают твой статус.</p>
+            </div>
+
+            <div class="conclusion fade-el">
+                <h2>Формула успеха</h2>
+                <ul style="text-align: left; display: inline-block;">
+                    <li>Собрал Бонус + Работу.</li>
+                    <li>Выполнил 3 игры в Минах минимальной ставкой — забрал 1000 Coins с Квеста.</li>
+                    <li>Купил 1 уровень Фермы за 1000 Coins.</li>
+                    <li>Оставшиеся средства аккуратно преумножаешь в Минах и Башне.</li>
+                    <li>Повышаешь ранг за счет XP и врываешься в <span class="cmd">/top</span>.</li>
+                </ul>
+                <p style="margin-top: 25px; font-size: 1.2rem; font-weight: bold; color: var(--accent-cyan);">Играй с умом, развивай свою экономику и докажи, что ты достоин звания Легенды в V4nty Arcade. Удачи! ⚡</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Прогресс-бар чтения
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        });
+
+        // Анимация появления элементов при скролле (Intersection Observer)
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Анимируем только один раз
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-el').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
